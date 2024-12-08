@@ -1,40 +1,20 @@
-let gameState = {
-    location: "radio_tower",
-    inventory: [],
-};
+document.getElementById('submit').addEventListener('click', () => {
+    const command = document.getElementById('command').value;
 
-const locations = {
-    radio_tower: {
-        description: "You stand in front of an old, crumbling radio tower.",
-        actions: ["look", "search", "move"],
-    },
-    bunker: {
-        description: "A heavily guarded bunker lies before you.",
-        actions: ["look", "enter", "search"],
-    },
-};
+    fetch('http://localhost:5000/api/command', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ command }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('story').textContent = data.response;
+        })
+        .catch(() => {
+            document.getElementById('story').textContent = "Error communicating with the game master.";
+        });
 
-function handleCommand(command) {
-    const storyElement = document.getElementById("story");
-    switch (command) {
-        case "look":
-            storyElement.textContent = locations[gameState.location].description;
-            break;
-        case "search":
-            storyElement.textContent = "You search the area for useful items.";
-            gameState.inventory.push("scrap metal");
-            break;
-        case "move":
-            gameState.location = "bunker";
-            storyElement.textContent = "You move towards the bunker.";
-            break;
-        default:
-            storyElement.textContent = "I don't understand that command.";
-    }
-}
-
-document.getElementById("submit").addEventListener("click", () => {
-    const command = document.getElementById("command").value;
-    handleCommand(command);
-    document.getElementById("command").value = "";
+    document.getElementById('command').value = '';
 });
