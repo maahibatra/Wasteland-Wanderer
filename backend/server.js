@@ -12,16 +12,38 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const HUGGING_FACE_API_URL = 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-32B-Instruct';
 
-const getAIResponse = async (inputText) => {
-    const prompt = `You are the game master of a text-based role-playing game. Interpret the player's input and continue the story in a dynamic and engaging way.`;
+const getAIResponse = async (inputText, gameState) => {
+    const prompt = `
+    You are the game master of a text-based role-playing game in a post-apocalyptic world. 
+    The player is in the following situation:
+    - Location: ${gameState.location}
+    - Inventory: ${gameState.inventory.join(', ')}
+    
+    The player commands: "${inputText}"
+
+    Based on this, give only:
+    1. A brief action (max 35 words) describing what happens after the player's action.
+    2. A list of possible actions for the player to take next, enclosed in brackets, like: [action1, action2].
+    Do not include unnecessary introductory phrases like "You are the game master."
+    Do not repeat the player's command or provide any additional context or phrases like "brief action:", "possible actions:", “certainly!”, etc.
+   `;
 
     try {
         const response = await axios.post(
             HUGGING_FACE_API_URL,
-            { inputs: `${prompt}\n\nPlayer: ${inputText}` },
+            { inputs: prompt },
             { headers: { Authorization: `Bearer ${process.env.hfKey}` } }
         );
-        return response.data[0]?.generated_text || "I couldn't understand that.";
+
+        let aiOutput = response.data[0]?.generated_text || "I couldn't understand that.";
+        
+        console.log("Raw AI output:", aiOutput);
+
+        let cleanedOutput = aiOutput.replace(/You are the game master[^]*?“certainly!”, etc./g, '').trim();
+
+        console.log("Cleaned AI output:", cleanedOutput);
+
+        return cleanedOutput || "Sorry, there was an error processing your request.";
     } catch (error) {
         console.error('Error communicating with Hugging Face API:', error);
         return "Sorry, there was an error processing your request.";
@@ -29,9 +51,18 @@ const getAIResponse = async (inputText) => {
 };
 
 app.post('/api/command', async (req, res) => {
-    const userCommand = req.body.command;
-    const aiResponse = await getAIResponse(userCommand);
-    res.json({ response: aiResponse });
+    const { command, gameState } = req.body;
+
+    const aiResponse = await getAIResponse(command, gameState);
+
+    if (command.toLowerCase() === "claim") {
+        gameState.inventory.push("tool kit");
+    }
+
+    res.json({ 
+        response: aiResponse, 
+        updatedGameState: gameState,
+    });
 });
 
 app.listen(port, () => {

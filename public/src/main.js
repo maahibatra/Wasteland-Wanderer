@@ -1,3 +1,8 @@
+let gameState = {
+    location: "radio_tower",
+    inventory: [],
+};
+
 document.getElementById('submit').addEventListener('click', () => {
     const command = document.getElementById('command').value;
 
@@ -6,11 +11,12 @@ document.getElementById('submit').addEventListener('click', () => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ command }),
+        body: JSON.stringify({ command, gameState }),
     })
         .then(response => response.json())
         .then(data => {
             document.getElementById('story').textContent = data.response;
+            gameState = data.updatedGameState || gameState;
         })
         .catch(() => {
             document.getElementById('story').textContent = "Error communicating with the game master.";
