@@ -14,17 +14,17 @@ const HUGGING_FACE_API_URL = 'https://api-inference.huggingface.co/models/Qwen/Q
 
 const getAIResponse = async (inputText, gameState) => {
     const prompt = `
-    You are the game master of a text-based role-playing game in a post-apocalyptic world. 
-    The player is in the following situation:
-    - Location: ${gameState.location}
-    - Inventory: ${gameState.inventory.join(', ')}
+    You are the game master of a text-based role-playing game in a post-apocalyptic world.
+    Make sure the storyline continues according to what peviously happened.
+    Do not make anything up or add to the story on your own.
     
     The player commands: "${inputText}"
 
     Based on this, give only:
-    1. A brief action (max 35 words) describing what happens after the player's action.
-    2. A list of possible actions for the player to take next, enclosed in brackets, like: [action1, action2].
-    Do not include unnecessary introductory phrases like "You are the game master."
+    An action (max 35 words) describing what happens after the player's action.
+    Possible actions for the player to take next, enclosed in brackets, like: [action 1, action 2].
+
+    Do not include unnecessary introductory phrases.
     Do not repeat the player's command or provide any additional context or phrases like "brief action:", "possible actions:", “certainly!”, etc.
    `;
 
@@ -40,6 +40,7 @@ const getAIResponse = async (inputText, gameState) => {
         console.log("Raw AI output:", aiOutput);
 
         let cleanedOutput = aiOutput.replace(/You are the game master[^]*?“certainly!”, etc./g, '').trim();
+        cleanedOutput = cleanedOutput.replace(/](.*)$/s, ']').trim();
 
         console.log("Cleaned AI output:", cleanedOutput);
 
@@ -51,17 +52,12 @@ const getAIResponse = async (inputText, gameState) => {
 };
 
 app.post('/api/command', async (req, res) => {
-    const { command, gameState } = req.body;
+    const { command } = req.body;
 
-    const aiResponse = await getAIResponse(command, gameState);
-
-    if (command.toLowerCase() === "claim") {
-        gameState.inventory.push("tool kit");
-    }
+    const aiResponse = await getAIResponse(command);
 
     res.json({ 
-        response: aiResponse, 
-        updatedGameState: gameState,
+        response: aiResponse
     });
 });
 
