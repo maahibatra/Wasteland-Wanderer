@@ -17,7 +17,7 @@ document.getElementById('submit').addEventListener('click', () => {
 
     const userMessage = document.createElement('div');
     userMessage.classList.add('user-message');
-    userMessage.textContent = `You: ${command}`;
+    userMessage.textContent = `${command}`;
     document.getElementById('story').appendChild(userMessage);
 
     commandInput.value = '';
@@ -34,7 +34,7 @@ document.getElementById('submit').addEventListener('click', () => {
             const story = document.getElementById('story');
             const aiMessage = document.createElement('div');
             aiMessage.classList.add('ai-message');
-            aiMessage.textContent = `AI: ${data.response}`;
+            aiMessage.textContent = `${data.response}`;
             story.appendChild(aiMessage);
             story.scrollTop = story.scrollHeight;
         })
