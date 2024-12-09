@@ -4,7 +4,7 @@ document.getElementById('submit').addEventListener('click', () => {
 
     if (!command.trim()) {
         const errorMessage = document.createElement('div');
-        errorMessage.classList.add('error-message');
+        errorMessage.classList.add('errorMessage');
         errorMessage.textContent = "Please enter a command.";
         document.getElementById('story').appendChild(errorMessage);
         errorMessage.style.display = 'block';
@@ -16,7 +16,7 @@ document.getElementById('submit').addEventListener('click', () => {
     }
 
     const userMessage = document.createElement('div');
-    userMessage.classList.add('user-message');
+    userMessage.classList.add('userMessage');
     userMessage.textContent = `${command}`;
     document.getElementById('story').appendChild(userMessage);
 
@@ -33,7 +33,7 @@ document.getElementById('submit').addEventListener('click', () => {
         .then(data => {
             const story = document.getElementById('story');
             const aiMessage = document.createElement('div');
-            aiMessage.classList.add('ai-message');
+            aiMessage.classList.add('aiMessage');
             aiMessage.textContent = `${data.response}`;
             story.appendChild(aiMessage);
             story.scrollTop = story.scrollHeight;
@@ -41,7 +41,7 @@ document.getElementById('submit').addEventListener('click', () => {
         .catch(() => {
             const story = document.getElementById('story');
             const errorMessage = document.createElement('div');
-            errorMessage.classList.add('ai-message');
+            errorMessage.classList.add('aiMessage');
             errorMessage.textContent = "Error communicating with the game master.";
             story.appendChild(errorMessage);
             story.scrollTop = story.scrollHeight;

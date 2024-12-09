@@ -11,7 +11,7 @@ This is a text-based RPG set in a post apocalyptic world.
 
 ## DEMO
 
-- (add link)
+- [Click Here!!](https://wasteland-wanderer.vercel.app/)
 
 ### Technology Used
 
