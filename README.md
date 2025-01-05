@@ -1,5 +1,7 @@
 # Wasteland Wanderer - AI Text RPG.
 
+NOTE: THE RPG IS NOT WORKING RIGHT NOW. SOMETHING IS WRONG WITH THE AI. IT WILL BE BACK SOON.
+
 This is a text-based RPG set in a post apocalyptic world.
 
 ## Features
